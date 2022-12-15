@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -96,6 +97,7 @@ namespace ApplicationBundleLauncher
                 {
                     path_LBL.Visibility = Visibility.Hidden;
                     path_TB.Visibility = Visibility.Hidden;
+                    selectFile_BTN.Visibility = Visibility.Hidden;
                     processName_LBL.Visibility = Visibility.Hidden;
                     processName_TB.Visibility = Visibility.Hidden;
                     cmdArgs_LBL.Visibility = Visibility.Hidden;
@@ -107,6 +109,8 @@ namespace ApplicationBundleLauncher
                 this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {
                     path_LBL.Content = "URL";
+                    path_TB.Width = 200;
+                    selectFile_BTN.Visibility = Visibility.Hidden;
                     processName_LBL.Visibility = Visibility.Hidden;
                     processName_TB.Visibility = Visibility.Hidden;
                     cmdArgs_LBL.Visibility = Visibility.Hidden;
@@ -176,6 +180,31 @@ namespace ApplicationBundleLauncher
             if(e.Key == Key.Return || e.Key == Key.Enter)
             {
                 save_BTN_Click(null, null);
+            }
+        }
+
+        private void selectFile_BTN_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            string startTarget = path_TB.Text;
+            if (startTarget.Length > 1)
+            {
+                if (File.Exists(startTarget))
+                {
+                    dialog.InitialDirectory = System.IO.Path.GetDirectoryName(startTarget);
+                }
+            }
+            dialog.Title = "Select target executable";
+            dialog.DefaultExt = ".exe";
+            dialog.Filter = "Executables|*.exe;";
+            bool? result = dialog.ShowDialog();
+            if (result == true)
+            {
+                this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    path_TB.Text = dialog.FileName;
+                    processName_TB.Text = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName);
+                }));
             }
         }
     }

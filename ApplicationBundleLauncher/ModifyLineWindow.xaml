@@ -7,17 +7,18 @@
         mc:Ignorable="d"
         Title="App Management" Height="208.614" Width="333.215" WindowStyle="None" WindowStartupLocation="CenterOwner">
     <Grid>
-        <TextBox x:Name="name_TB" HorizontalAlignment="Left" Height="23" Margin="113,23,0,0" VerticalAlignment="Top" Width="200" TabIndex="1"/>
-        <TextBox x:Name="path_TB" HorizontalAlignment="Left" Height="23" Margin="113,51,0,0" VerticalAlignment="Top" Width="200" TabIndex="2"/>
-        <TextBox x:Name="cmdArgs_TB" HorizontalAlignment="Left" Height="23" Margin="113,107,0,0" VerticalAlignment="Top" Width="200" TabIndex="4"/>
+        <TextBox x:Name="name_TB" HorizontalAlignment="Left" Height="23" Margin="113,23,0,0" VerticalAlignment="Top" Width="200" TabIndex="1" ToolTip="Display name of item."/>
+        <TextBox x:Name="path_TB" HorizontalAlignment="Left" Height="23" Margin="113,51,0,0" VerticalAlignment="Top" Width="170" TabIndex="2" ToolTip="Full file path of, including file name and extension."/>
+        <TextBox x:Name="cmdArgs_TB" HorizontalAlignment="Left" Height="23" Margin="113,107,0,0" VerticalAlignment="Top" Width="200" TabIndex="4" ToolTip="Any command line arguments. Can be blank."/>
         <Label x:Name="label" Content="Name" HorizontalAlignment="Left" Margin="66,19,0,0" VerticalAlignment="Top"/>
         <Label x:Name="path_LBL" Content="File Path" HorizontalAlignment="Left" Margin="53,47,0,0" VerticalAlignment="Top"/>
         <Label x:Name="cmdArgs_LBL" Content="CMD Arguments" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="save_BTN" Content="Save" Margin="0,0,10,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="save_BTN_Click" TabIndex="5"/>
-        <Button x:Name="cancel_BTN" Content="Cancel" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Height="20" VerticalAlignment="Bottom" Click="cancel_BTN_Click" TabIndex="6"/>
+        <Button x:Name="save_BTN" Content="Save" Margin="0,0,10,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="save_BTN_Click" TabIndex="5" ToolTip="Save item."/>
+        <Button x:Name="cancel_BTN" Content="Cancel" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Height="20" VerticalAlignment="Bottom" Click="cancel_BTN_Click" TabIndex="6" ToolTip="Cancels saving/editing item."/>
         <Label x:Name="processName_LBL" Content="Process Name" HorizontalAlignment="Left" Margin="23,75,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="processName_TB" HorizontalAlignment="Left" Height="23" Margin="113,79,0,0" VerticalAlignment="Top" Width="200" TabIndex="3"/>
-        <Label x:Name="appBundle_LBL" Content="Selected App Bundle: NONE" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="processName_TB" HorizontalAlignment="Left" Height="23" Margin="113,79,0,0" VerticalAlignment="Top" Width="200" TabIndex="3" ToolTip="Process name of app. Can be blank."/>
+        <Label x:Name="appBundle_LBL" Content="Selected App Bundle: NONE" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top" ToolTip="Bundle this item will be added to or edited from."/>
+        <Button x:Name="selectFile_BTN" Content="..." HorizontalAlignment="Left" Margin="288,53,0,0" VerticalAlignment="Top" Width="25" Click="selectFile_BTN_Click" ToolTip="Select target exe to launch (will populate Process Name too, but doublecheck value)."/>
 
     </Grid>
 </Window>

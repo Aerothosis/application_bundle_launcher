@@ -1,10 +1,13 @@
 ﻿using IWshRuntimeLibrary;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,9 +23,13 @@ namespace ApplicationBundleLauncher
         private string dataStoragePath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\ApplicationBundleLauncher\\saveddata.json";
         private List<ApplicationBundle> appBundles = new List<ApplicationBundle>();
         private List<string> appBundleNames = new List<string>();
+        private List<string> startedAppProcessNames = new List<string>();
         private int selAppBundleIndex = -2;
         private int selAppIndex = -2;
         private string autoStartTarget = "";
+        private HttpClient client = new HttpClient();
+        private NewUpdateInfo updateInfo;
+        private bool isUpdateAvailable = false;
 
         public MainWindow()
         {
@@ -32,6 +39,8 @@ namespace ApplicationBundleLauncher
             appBundles_LB.MouseDoubleClick += AppBundles_LB_MouseDoubleClick;
             apps_LB.SelectionChanged += Apps_LB_SelectionChanged;
             apps_LB.MouseDoubleClick += Apps_LB_MouseDoubleClick;
+
+            Task.Run(() => CheckForUpdates());
         }
 
         public void LogLine(string txt)
@@ -94,6 +103,61 @@ namespace ApplicationBundleLauncher
                 AppBundles_LB_SelectionChanged(null, null);
                 selAppBundleIndex = index;
                 launch_BTN_Click(null, null);
+            }
+        }
+
+        private async void CheckForUpdates()
+        {
+            try
+            {
+                string urlBase = "https://api.github.com/repos/Aerothosis/application_bundle_launcher/releases/latest";
+                HttpRequestMessage request = new HttpRequestMessage()
+                {
+                    RequestUri = new Uri(urlBase),
+                    Method = HttpMethod.Get,
+                };
+                request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+                request.Headers.Add("User-Agent", "request");
+                using (HttpResponseMessage response = await client.SendAsync(request))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    JObject obj = JObject.Parse(responseBody);
+                    string latestVersion = (string)obj["tag_name"];
+                    string currentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+                    Version latestV = new Version(latestVersion);
+                    Version currentV = new Version(currentVersion);
+                    if(currentV < latestV)
+                    {
+                        string releaseDate = (string)obj["published_at"];
+                        string releaseNotes = (string)obj["body"];
+                        var assets = obj["assets"];
+                        var assetsFirst = assets.First;
+                        string browserDownloadUrl = (string)assetsFirst["browser_download_url"];
+                        string downloadFilename = (string)assetsFirst["name"];
+                        updateInfo = new NewUpdateInfo()
+                        {
+                            VersionCurrent = currentVersion,
+                            VersionNew = latestVersion,
+                            ReleaseDate = releaseDate,
+                            ReleaseNotes = releaseNotes,
+                            DownloadUrl = browserDownloadUrl,
+                            DownloadFileName= downloadFilename,
+                        };
+                        isUpdateAvailable = true;
+                        _ = Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                        {
+                            updateAvailable_BTN.Content = "v" + latestVersion + " Available!";
+                            updateAvailable_BTN.Visibility = Visibility.Visible;
+                        }));
+                    }
+                }
+            }
+            catch(HttpRequestException e)
+            {
+                LogLine("Failed to request update information from GitHub.");
+                Console.WriteLine("GitHub request failed. " + e.Message + "\n" + e.StackTrace);
             }
         }
 
@@ -322,6 +386,7 @@ namespace ApplicationBundleLauncher
                             psi = new ProcessStartInfo();
                             psi.FileName = a.FilePath;
                             psi.WorkingDirectory = Path.GetDirectoryName(a.FilePath);
+                            startedAppProcessNames.Add(Path.GetFileNameWithoutExtension(a.FilePath));
                             if (a.CmdArgs.Length > 0)
                             {
                                 psi.Arguments = a.CmdArgs;
@@ -366,7 +431,7 @@ namespace ApplicationBundleLauncher
                 Process[] processes = Process.GetProcesses();
                 foreach(Process p in processes)
                 {
-                    if(appNames.Contains(p.ProcessName))
+                    if((appNames.Contains(p.ProcessName)) || (startedAppProcessNames.Contains(p.ProcessName)))
                     {
                         p.Kill();
                         count++;
@@ -523,7 +588,7 @@ namespace ApplicationBundleLauncher
                 string iconSource = app.Replace('\\', '/');
 
                 var dialog = new Microsoft.Win32.OpenFileDialog();
-                dialog.FileName = "Source Icon";
+                dialog.Title = "Select desired icon source";
                 dialog.DefaultExt = ".exe";
                 dialog.Filter = "Executables and Icons|*.exe;*.ico";
                 bool? result = dialog.ShowDialog();
@@ -539,6 +604,16 @@ namespace ApplicationBundleLauncher
                 shortcut.TargetPath = app;
                 shortcut.Arguments = "--" + target;
                 shortcut.Save();
+            }
+        }
+
+        private void updateAvailable_BTN_Click(object sender, RoutedEventArgs e)
+        {
+            if (isUpdateAvailable)
+            {
+                UpdateAvailable ua = new UpdateAvailable(updateInfo);
+                ua.Owner = this;
+                ua.Show();
             }
         }
     }

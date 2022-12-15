@@ -5,27 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ApplicationBundleLauncher"
         mc:Ignorable="d"
-        Title="App Bundle Launcher" Height="331.319" Width="800">
+        Title="App Bundle Launcher" Height="335" Width="815" MinWidth="815" MinHeight="335" MaxWidth="815" MaxHeight="335">
     <Grid>
-        <Button x:Name="close_BTN" Content="Close Apps" Margin="0,0,161,10" Background="#FFF38D8D" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="120" Click="close_BTN_Click"/>
-        <Button x:Name="launch_BTN" Content="Launch Apps" Margin="0,0,10,10" Background="#FF7BEE7B" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="120" Click="launch_BTN_Click"/>
+        <Button x:Name="close_BTN" Content="Close Apps" Margin="0,0,184,10" Background="#FFF38D8D" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="120" Click="close_BTN_Click" ToolTip="Closes all apps/urls from selected bundle."/>
+        <Button x:Name="launch_BTN" Content="Launch Apps" Margin="0,0,33,10" Background="#FF7BEE7B" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="120" Click="launch_BTN_Click" ToolTip="Launches all apps/urls from selected bundle."/>
         <ListBox x:Name="appBundles_LB" HorizontalAlignment="Left" Height="190" Margin="10,49,0,0" VerticalAlignment="Top" Width="159"/>
-        <Label x:Name="label" Content="App Bundles" HorizontalAlignment="Left" Margin="10,18,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label" Content="App Bundles" HorizontalAlignment="Left" Margin="10,18,0,0" VerticalAlignment="Top" ToolTip="List of app bundles."/>
         <ListBox x:Name="apps_LB" HorizontalAlignment="Left" Height="190" Margin="174,49,0,0" VerticalAlignment="Top" Width="175"/>
-        <Label x:Name="label1" Content="Managed Applications" HorizontalAlignment="Left" Margin="174,18,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="appBundleAdd_BTN" Content="ADD" HorizontalAlignment="Left" Margin="10,244,0,0" VerticalAlignment="Top" Width="35" Height="20" Click="appBundleAdd_BTN_Click"/>
-        <Button x:Name="appAdd_BTN" Content="ADD" HorizontalAlignment="Left" Margin="174,244,0,0" VerticalAlignment="Top" Width="31" Height="20" Click="appAdd_BTN_Click"/>
-        <Button x:Name="appBundleRemove_BTN" Content="DEL" HorizontalAlignment="Left" Margin="90,244,0,0" VerticalAlignment="Top" Width="35" Height="20" RenderTransformOrigin="1.525,0.395" Click="appBundleRemove_BTN_Click"/>
-        <Button x:Name="appRemove_BTN" Content="DEL" HorizontalAlignment="Left" Margin="250,244,0,0" VerticalAlignment="Top" Width="35" Height="20" RenderTransformOrigin="1.525,0.395" Click="appRemove_BTN_Click"/>
+        <Label x:Name="label1" Content="Managed Applications" HorizontalAlignment="Left" Margin="174,18,0,0" VerticalAlignment="Top" ToolTip="List of apps/urls associated with selected app bundle."/>
+        <Button x:Name="appBundleAdd_BTN" Content="ADD" HorizontalAlignment="Left" Margin="10,244,0,0" VerticalAlignment="Top" Width="35" Height="20" Click="appBundleAdd_BTN_Click" ToolTip="Create new bundle."/>
+        <Button x:Name="appAdd_BTN" Content="ADD" HorizontalAlignment="Left" Margin="174,244,0,0" VerticalAlignment="Top" Width="31" Height="20" Click="appAdd_BTN_Click" ToolTip="Adds new app."/>
+        <Button x:Name="appBundleRemove_BTN" Content="DEL" HorizontalAlignment="Left" Margin="90,244,0,0" VerticalAlignment="Top" Width="35" Height="20" RenderTransformOrigin="1.525,0.395" Click="appBundleRemove_BTN_Click" ToolTip="Delete selected app bundle. Will also remove all associated apps/urls."/>
+        <Button x:Name="appRemove_BTN" Content="DEL" HorizontalAlignment="Left" Margin="250,244,0,0" VerticalAlignment="Top" Width="35" Height="20" RenderTransformOrigin="1.525,0.395" Click="appRemove_BTN_Click" ToolTip="Delete selected app/url."/>
         <TextBox x:Name="log_TB" HorizontalAlignment="Left" Height="117" Margin="354,49,0,0" VerticalAlignment="Top" Width="428" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" IsReadOnly="True"/>
-        <Label x:Name="label2" Content="Log" HorizontalAlignment="Left" Margin="354,18,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.425,0.475"/>
-        <Button x:Name="appBundleEdit_BTN" Content="EDIT" HorizontalAlignment="Left" Margin="50,244,0,0" VerticalAlignment="Top" Width="35" RenderTransformOrigin="0.5,0.5" Click="appBundleEdit_BTN_Click"/>
-        <Button x:Name="appEdit_BTN" Content="EDIT" HorizontalAlignment="Left" Margin="210,244,0,0" VerticalAlignment="Top" Width="35" Click="appEdit_BTN_Click"/>
-        <Button x:Name="save_BTN" Content="Save" HorizontalAlignment="Left" Margin="707,171,0,0" VerticalAlignment="Top" Width="75" Click="save_BTN_Click"/>
+        <Label x:Name="label2" Content="Log" HorizontalAlignment="Left" Margin="354,18,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.425,0.475" ToolTip="Read-only log output. Saving this is helpful for troubleshooting."/>
+        <Button x:Name="appBundleEdit_BTN" Content="EDIT" HorizontalAlignment="Left" Margin="50,244,0,0" VerticalAlignment="Top" Width="35" RenderTransformOrigin="0.5,0.5" Click="appBundleEdit_BTN_Click" ToolTip="Edit selected bundle (name only)."/>
+        <Button x:Name="appEdit_BTN" Content="EDIT" HorizontalAlignment="Left" Margin="210,244,0,0" VerticalAlignment="Top" Width="35" Click="appEdit_BTN_Click" ToolTip="Edit selected app/url."/>
+        <Button x:Name="save_BTN" Content="Save" HorizontalAlignment="Left" Margin="707,171,0,0" VerticalAlignment="Top" Width="75" Click="save_BTN_Click" ToolTip="Save the log to a file."/>
         <Label x:Name="selAppBundle_LBL" Content="Selected App Bundle ID: 0" HorizontalAlignment="Left" Margin="354,171,0,0" VerticalAlignment="Top"/>
         <Label x:Name="selApp_LBL" Content="Selected Application ID: 0" HorizontalAlignment="Left" Margin="354,202,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="addUrl_BTN" Content="ADD URL" HorizontalAlignment="Left" Margin="174,269,0,0" VerticalAlignment="Top" Width="55" Click="addUrl_BTN_Click"/>
-        <Button x:Name="mkShortcut_BTN" Content="Make Shortcut" HorizontalAlignment="Left" Margin="10,269,0,0" VerticalAlignment="Top" Width="115" Click="mkShortcut_BTN_Click"/>
-
+        <Button x:Name="addUrl_BTN" Content="ADD URL" HorizontalAlignment="Left" Margin="174,269,0,0" VerticalAlignment="Top" Width="55" Click="addUrl_BTN_Click" ToolTip="Creates a new URL target."/>
+        <Button x:Name="mkShortcut_BTN" Content="Make Shortcut" HorizontalAlignment="Left" Margin="10,269,0,0" VerticalAlignment="Top" Width="115" Click="mkShortcut_BTN_Click" ToolTip="Makes a desktop shortcut for the selected bundle."/>
+        <Button x:Name="updateAvailable_BTN" Content="Update Available!!" HorizontalAlignment="Left" Margin="659,18,0,0" VerticalAlignment="Top" Width="123" ToolTip="There is an update available! Click to learn more." Click="updateAvailable_BTN_Click" ScrollViewer.VerticalScrollBarVisibility="Disabled" Visibility="Hidden"/>
     </Grid>
 </Window>
