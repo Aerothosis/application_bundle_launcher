@@ -25,6 +25,7 @@
         <Label x:Name="selAppBundle_LBL" Content="Selected App Bundle ID: 0" HorizontalAlignment="Left" Margin="354,171,0,0" VerticalAlignment="Top"/>
         <Label x:Name="selApp_LBL" Content="Selected Application ID: 0" HorizontalAlignment="Left" Margin="354,202,0,0" VerticalAlignment="Top"/>
         <Button x:Name="addUrl_BTN" Content="ADD URL" HorizontalAlignment="Left" Margin="174,269,0,0" VerticalAlignment="Top" Width="55" Click="addUrl_BTN_Click"/>
+        <Button x:Name="mkShortcut_BTN" Content="Make Shortcut" HorizontalAlignment="Left" Margin="10,269,0,0" VerticalAlignment="Top" Width="115" Click="mkShortcut_BTN_Click"/>
 
     </Grid>
 </Window>

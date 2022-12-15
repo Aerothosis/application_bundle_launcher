@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using IWshRuntimeLibrary;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,8 +19,10 @@ namespace ApplicationBundleLauncher
     {
         private string dataStoragePath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\ApplicationBundleLauncher\\saveddata.json";
         private List<ApplicationBundle> appBundles = new List<ApplicationBundle>();
+        private List<string> appBundleNames = new List<string>();
         private int selAppBundleIndex = -2;
         private int selAppIndex = -2;
+        private string autoStartTarget = "";
 
         public MainWindow()
         {
@@ -81,12 +84,25 @@ namespace ApplicationBundleLauncher
             }
         }
 
+        public void AutoStartProjectFromCmdLine(string target)
+        {
+            autoStartTarget = target;
+            if (appBundleNames.Contains(target))
+            {
+                int index = appBundleNames.IndexOf(target);
+                appBundles_LB.SelectedIndex = index;
+                AppBundles_LB_SelectionChanged(null, null);
+                selAppBundleIndex = index;
+                launch_BTN_Click(null, null);
+            }
+        }
+
         private void RetrieveCurrentSavedData()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(dataStoragePath));
-            if(File.Exists(dataStoragePath))
+            if(System.IO.File.Exists(dataStoragePath))
             {
-                string jsonString = File.ReadAllText(dataStoragePath);
+                string jsonString = System.IO.File.ReadAllText(dataStoragePath);
                 appBundles = JsonConvert.DeserializeObject<List<ApplicationBundle>>(jsonString);
                 PopulateAppBundles();
             }
@@ -100,12 +116,12 @@ namespace ApplicationBundleLauncher
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(dataStoragePath));
-                if (File.Exists(dataStoragePath))
+                if (System.IO.File.Exists(dataStoragePath))
                 {
-                    File.Delete(dataStoragePath);
+                    System.IO.File.Delete(dataStoragePath);
                 }
 
-                File.WriteAllText(dataStoragePath, output);
+                System.IO.File.WriteAllText(dataStoragePath, output);
                 LogLine("Changes saved successfully.");
             } catch(Exception e)
             {
@@ -122,7 +138,7 @@ namespace ApplicationBundleLauncher
 
         private void PopulateAppBundles()
         {
-            List<string> appBundleNames = new List<string>();
+            // appBundleNames = new List<string>();
             for(int x = 0; x < appBundles.Count; x++)
             {
                 appBundleNames.Add(appBundles[x].Name);
@@ -301,7 +317,7 @@ namespace ApplicationBundleLauncher
                     else
                     {
                         LogLine("Launching [" + a.Name + "]");
-                        if (File.Exists(a.FilePath))
+                        if (System.IO.File.Exists(a.FilePath))
                         {
                             psi = new ProcessStartInfo();
                             psi.FileName = a.FilePath;
@@ -496,5 +512,34 @@ namespace ApplicationBundleLauncher
             SaveData();
         }
 
+        private void mkShortcut_BTN_Click(object sender, RoutedEventArgs e)
+        {
+            if ((selAppBundleIndex >= 0) && (selAppBundleIndex < appBundleNames.Count))
+            {
+                string desktopDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string target = appBundleNames[selAppBundleIndex];
+                string app = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string shortcutName = desktopDir + "\\" + target + " - ABL.lnk";
+                string iconSource = app.Replace('\\', '/');
+
+                var dialog = new Microsoft.Win32.OpenFileDialog();
+                dialog.FileName = "Source Icon";
+                dialog.DefaultExt = ".exe";
+                dialog.Filter = "Executables and Icons|*.exe;*.ico";
+                bool? result = dialog.ShowDialog();
+                if (result == true)
+                {
+                    iconSource = dialog.FileName.Replace("\\", "/");
+                }
+
+                WshShell shell = new WshShell();
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutName);
+                shortcut.Description = "Quick launch shortcut for bundle name [" + target + "]. Changing the bundle name will BREAK this shortcut!!";
+                shortcut.IconLocation = iconSource;
+                shortcut.TargetPath = app;
+                shortcut.Arguments = "--" + target;
+                shortcut.Save();
+            }
+        }
     }
 }
