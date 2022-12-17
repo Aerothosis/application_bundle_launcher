@@ -21,6 +21,7 @@ namespace ApplicationBundleLauncher
         public string ProcessName { get; set; } = "";
         public string CmdArgs { get; set; } = "";
         public bool IsURL { get; set; } = false;
+        public bool IsProcessRunning { get; set; } = false;
 
         public ManagedApp() { }
     }

@@ -321,6 +321,27 @@ namespace ApplicationBundleLauncher
             }
             return output;
         }
+        
+        private List<ManagedApp> CheckIfProcessRunning(List<ManagedApp> targetApps)
+        {
+            Process[] processes = Process.GetProcesses();
+            List<string> runningProcessNames = new List<string>();
+            foreach(Process p in processes)
+            {
+                runningProcessNames.Add(p.ProcessName);
+            }
+            foreach(ManagedApp app in targetApps)
+            {
+                if(app.IsURL)
+                {
+                    app.IsProcessRunning = false;
+                } else
+                {
+                    app.IsProcessRunning = runningProcessNames.Contains(app.ProcessName);
+                }
+            }
+            return targetApps;
+        }
 
         private void AppBundles_LB_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -356,7 +377,7 @@ namespace ApplicationBundleLauncher
         {
             if(CheckAppBundleIndex())
             {
-                List<ManagedApp> apps = appBundles[selAppBundleIndex].ManagedApps;
+                List<ManagedApp> apps = CheckIfProcessRunning(appBundles[selAppBundleIndex].ManagedApps);
                 LogLine("App bundle found. Launching [" + apps.Count + "] applications...");
                 bool anyFailed = false;
 
@@ -380,24 +401,30 @@ namespace ApplicationBundleLauncher
                     } 
                     else
                     {
-                        LogLine("Launching [" + a.Name + "]");
-                        if (System.IO.File.Exists(a.FilePath))
+                        if(a.IsProcessRunning)
                         {
-                            psi = new ProcessStartInfo();
-                            psi.FileName = a.FilePath;
-                            psi.WorkingDirectory = Path.GetDirectoryName(a.FilePath);
-                            startedAppProcessNames.Add(Path.GetFileNameWithoutExtension(a.FilePath));
-                            if (a.CmdArgs.Length > 0)
+                            LogLine("Skipping process [" + a.ProcessName + "], it's already running.");
+                        } else
+                        {
+                            LogLine("Launching [" + a.Name + "]");
+                            if (System.IO.File.Exists(a.FilePath))
                             {
-                                psi.Arguments = a.CmdArgs;
+                                psi = new ProcessStartInfo();
+                                psi.FileName = a.FilePath;
+                                psi.WorkingDirectory = Path.GetDirectoryName(a.FilePath);
+                                startedAppProcessNames.Add(Path.GetFileNameWithoutExtension(a.FilePath));
+                                if (a.CmdArgs.Length > 0)
+                                {
+                                    psi.Arguments = a.CmdArgs;
+                                }
+                                Process.Start(psi);
+                                LogLine("Successfully started [" + a.Name + "]");
                             }
-                            Process.Start(psi);
-                            LogLine("Successfully started [" + a.Name + "]");
-                        }
-                        else
-                        {
-                            LogLine("Failed to launch [" + a.Name + "], file path invalid.");
-                            anyFailed = true;
+                            else
+                            {
+                                LogLine("Failed to launch [" + a.Name + "], file path invalid.");
+                                anyFailed = true;
+                            }
                         }
                     }
                 }
